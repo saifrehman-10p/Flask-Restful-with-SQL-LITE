@@ -5,8 +5,8 @@ from db import db
 class ItemModel(db.Model):
     __tablename__='items'
     id = db.Column(db.Integer, primary_key=True)
-    name=db.Column(db.Float)
-    price = db.Column(db.String)
+    name=db.Column(db.String)
+    price = db.Column(db.Float)
 
     def __init__(self,name,price):
         self.name=name
@@ -18,36 +18,23 @@ class ItemModel(db.Model):
 
     @classmethod
     def search_item(cls, name):
-        connection = sqlite3.connect('test.db')
-        cursor = connection.cursor()
-
-        query = "SELECT * FROM items where name =?"
-        result = cursor.execute(query,(name,))
-        row = result.fetchone()
 
 
-        if row:
-            return cls(*row)
-
-        connection.close()
+        x=ItemModel.query.filter(ItemModel.name==name).first()
+        return x
 
 
 
 
     def insert_item(self):
-        #data = ItemModel.parser.parse_args()
-        connection = sqlite3.connect('test.db')
-        cursor = connection.cursor()
-        insert_into = " INSERT INTO items(name,price) VALUES(?,?)"
-        cursor.execute(insert_into, (self.name, self.price,))
-        connection.commit()
-        connection.close()
 
-    def update_item(self):
-        #data = Item.parser.parse_args()
-        connection = sqlite3.connect('test.db')
-        cursor = connection.cursor()
-        cursor.execute("UPDATE items SET price=? WHERE name = ?", (self.price, self.name,))
-        connection.commit()
-        connection.close()
+
+
+        db.session.add(self)
+        db.session.commit()
+
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
 
